@@ -1,0 +1,962 @@
+
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GenomiXplore - Pioneering Science with Smart Features</title>
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="GenomiXplore - Pioneering Science with Smart Features">
+    <meta name="description" content="GenomiXplore explores Blood Cancer, Breast Cancer, Neuroelasticity, Neuroplasticity, and Quantum World with smart, interactive features inspired by GateMate.">
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://genomixplore.com/">
+    <meta property="og:title" content="GenomiXplore - Pioneering Science with Smart Features">
+    <meta property="og:description" content="Discover groundbreaking research with smart features in cancer biology, neuroscience, and quantum science.">
+    <meta property="og:image" content="https://genomixplore.com/banner-image.jpg">
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://genomixplore.com/">
+    <meta property="twitter:title" content="GenomiXplore - Pioneering Science with Smart Features">
+    <meta property="twitter:description" content="Explore Blood Cancer, Breast Cancer, Neuroelasticity, Neuroplasticity, and Quantum World with GenomiXplore's smart platform.">
+    <meta property="twitter:image" content="https://genomixplore.com/banner-image.jpg">
+    <!-- Favicon -->
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    <!-- Canonical Link -->
+    <link rel="canonical" href="https://genomixplore.com/">
+    <!-- External Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #f97316, #facc15);
+            color: #1f2937;
+            transition: background-color 0.3s, color 0.3s;
+            margin: 0;
+            padding: 0;
+        }
+        .navbar {
+            background: linear-gradient(90deg, #ea580c, #f59e0b);
+        }
+        .navbar-brand {
+            font-weight: 700;
+            color: #fff !important;
+            display: flex;
+            align-items: center;
+            transition: color 0.3s;
+        }
+        .navbar-brand svg {
+            height: 40px;
+            margin-right: 10px;
+            transition: transform 0.3s;
+        }
+        .navbar-brand .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+        }
+        .navbar-brand:hover svg {
+            transform: scale(1.1);
+        }
+        .section-bg {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(5px);
+            border-radius: 15px;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+        }
+        .welcome-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 4rem;
+            color: #dc2626;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        .animate-welcome {
+            animation: bounceIn 1.5s ease-out;
+        }
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .animate-fade-in {
+            animation: fadeIn 1s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .interactive-btn {
+            background: linear-gradient(90deg, #f97316, #facc15);
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 25px;
+            border: none;
+            font-weight: bold;
+            transition: transform 0.2s, background 0.3s;
+        }
+        .interactive-btn:hover {
+            transform: scale(1.1);
+            background: linear-gradient(90deg, #dc2626, #ef4444);
+        }
+        .marquee-section {
+            background: #dc2626;
+            color: #fff;
+            padding: 10px 0;
+            font-weight: bold;
+        }
+        .toggle-section {
+            display: none;
+            transition: all 0.3s ease;
+        }
+        .toggle-section.active {
+            display: block;
+        }
+        .whatsapp-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #25D366;
+            color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, transform 0.3s;
+            z-index: 1000;
+        }
+        .whatsapp-btn:hover {
+            background: #20b958;
+            transform: scale(1.1);
+        }
+        .whatsapp-btn i {
+            font-size: 30px;
+        }
+        .whatsapp-options {
+            position: fixed;
+            bottom: 90px;
+            right: 20px;
+            background: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+            border: 1px solid #dee2e6;
+        }
+        .whatsapp-options a {
+            padding: 10px 20px;
+            color: #333;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.3s;
+        }
+        .whatsapp-options a:hover {
+            background: #f0f0f0;
+        }
+        .whatsapp-tooltip {
+            position: absolute;
+            bottom: 80px;
+            right: 70px;
+            background: #333;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            display: none;
+            z-index: 1000;
+        }
+        .whatsapp-btn:hover .whatsapp-tooltip {
+            display: block;
+        }
+        .smart-gate-controls {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        .qr-code {
+            width: 100px;
+            height: 100px;
+            background: #fff;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+        }
+        .hero-section {
+            background: linear-gradient(135deg, #ea580c, #facc15);
+            color: white;
+            padding: 120px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            animation: fadeIn 1s ease-in;
+        }
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+        }
+        .hero-section h1, .hero-section p, .hero-section .search-bar {
+            position: relative;
+            z-index: 1;
+        }
+        .search-bar {
+            max-width: 600px;
+            margin: 20px auto;
+            animation: fadeInUp 1s ease-out 0.5s backwards;
+        }
+        .search-bar input {
+            border-radius: 25px 0 0 25px;
+            border: none;
+            padding: 10px 20px;
+            outline: none;
+        }
+        .search-bar button {
+            border-radius: 0 25px 25px 0;
+            padding: 10px 25px;
+            background-color: #dc2626;
+            border: none;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        .search-bar button:hover {
+            background-color: #ef4444;
+        }
+        .course-carousel, .strategy-section, .download-section {
+            padding: 60px 0;
+            background-color: #fff;
+        }
+        .carousel-item img {
+            height: 300px;
+            object-fit: cover;
+            border-bottom: 4px solid #dc2626;
+        }
+        .card-body {
+            color: #333;
+        }
+        .card-text {
+            background: linear-gradient(to right, #ff0000, #ff6200);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 600;
+        }
+        .download-card {
+            border: none;
+            border-radius: 15px;
+            background: linear-gradient(145deg, #ffffff, #f0f0f0);
+            transition: transform 0.3s, box-shadow 0.3s;
+            overflow: hidden;
+        }
+        .download-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+        }
+        .download-card .card-body {
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .download-card .card-title {
+            font-weight: 600;
+            margin-bottom: 0;
+        }
+        .download-card .btn {
+            background-color: #dc2626;
+            border: none;
+        }
+        .download-card .btn:hover {
+            background-color: #ef4444;
+        }
+        .dark .bg-gray-50 { background-color: #2d3748; }
+        .dark .bg-white { background-color: #1a202c; }
+        .dark .text-gray-600 { color: #a0aec0; }
+        .dark .text-gray-900 { color: #e5e7eb; }
+        .dark .card { background: rgba(0, 0, 0, 0.5); }
+        .dark .welcome-text { color: #facc15; }
+        .dark .marquee-section { background: #b91c1c; }
+        .dark .section-bg { background: rgba(0, 0, 0, 0.3); }
+        .dark .course-carousel, .dark .strategy-section, .dark .download-section {
+            background-color: #2c2c2c;
+        }
+        .dark .card {
+            background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+        }
+        .dark .card-body {
+            color: #e9ecef;
+        }
+        .dark .card-text {
+            background: linear-gradient(to right, #ff4040, #ff8c40);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 600;
+        }
+        .dark .download-card {
+            background: linear-gradient(145deg, #2c2c2c, #1a1a1a);
+        }
+        .dark .download-card .card-body {
+            color: #e9ecef;
+        }
+        .dark .download-card .btn {
+            background-color: #f97316;
+        }
+        .dark .download-card .btn:hover {
+            background-color: #facc15;
+        }
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @keyframes fadeInUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        @media (max-width: 767.98px) {
+            .search-bar {
+                max-width: 100%;
+            }
+            .search-bar input, .search-bar button {
+                border-radius: 25px;
+            }
+            .carousel-item img {
+                height: 200px;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg py-4 fixed w-full top-0 z-10 text-white">
+        <div class="container mx-auto flex justify-between items-center px-4">
+            <a class="navbar-brand" href="/index.html">
+                <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+                    <defs>
+                        <linearGradient id="gradient-light" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#ea580c;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#facc15;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <path class="gradient-fill" fill="url(#gradient-light)" d="M10 30 V10 H15 V5 H25 V10 H30 V30 H25 V25 H15 V30 Z M15 15 H25 V20 H15 Z" />
+                    <path fill="#fff" d="M17 17 H23 V18 H17 Z M17 19 H23 V20 H17 Z" />
+                </svg>
+                <span class="logo-text">GenomiXplore</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item"><a class="nav-link active" href="#home">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#research">Research</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#smart-controls">Smart Controls</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#resources">Resources</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="careerDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Career Support
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="careerDropdown">
+                            <li><a class="dropdown-item" href="/internship.html">Internships</a></li>
+                            <li><a class="dropdown-item" href="/careers.html">Careers</a></li>
+                            <li><a class="dropdown-item" href="/research-writing.html">Research Writing</a></li>
+                            <li><a class="dropdown-item" href="/hiring.html">Hiring</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a class="nav-link" href="/notice.html">Notice Board</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#about">About</a></li>
+                    <li class="nav-item"><a class="nav-link" href="#contact">Contact</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Account
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item" href="/login.html">Login</a></li>
+                            <li><a class="dropdown-item" href="/register.html">Register</a></li>
+                            <li><a class="dropdown-item" href="/student-dashboard.html">Student Dashboard</a></li>
+                            <li><a class="dropdown-item" href="/faculty-dashboard.html">Faculty Dashboard</a></li>
+                            <li><a class="dropdown-item" href="/admin.html">Admin</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <div class="flex space-x-4">
+                    <button id="themeToggle" class="interactive-btn">Toggle Dark Mode</button>
+                    <button onclick="scrollToSection('research')" class="interactive-btn">Explore Now</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Marquee Section -->
+    <div class="marquee-section mt-16">
+        <marquee behavior="scroll" direction="left">
+            🎉 20% off on all research programs! | Free trial access this week! | Join our referral program for rewards! 🎉
+        </marquee>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="hero-section">
+        <div class="container">
+            <h1 class="welcome-text animate-welcome">Unlock Research Excellence with GenomiXplore</h1>
+            <p class="lead mb-4 text-gray-200">Discover cutting-edge research in Cancer, Neuroscience, and Quantum Worlds with smart features.</p>
+            <div class="search-bar">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search research topics..." id="searchInput">
+                    <button class="btn" onclick="searchResearch()"><i class="fas fa-search"></i></button>
+                </div>
+            </div>
+            <div class="mt-4 space-x-4">
+                <button onclick="scrollToSection('research')" class="interactive-btn btn-lg">Explore Research</button>
+                <button onclick="window.location.href='/register.html'" class="interactive-btn btn-lg">Get Started</button>
+            </div>
+            <p id="welcomeMessage" class="toggle-section mt-4 text-gray-200">
+                We're thrilled to have you! Explore our interactive features, groundbreaking research, and smart control systems.
+            </p>
+        </div>
+    </section>
+
+    <!-- Research Areas Section -->
+    <section id="research" class="course-carousel">
+        <div class="container">
+            <h2 class="text-center mb-8 text-orange-800 dark:text-orange-300">Our Research Areas</h2>
+            <div id="researchCarousel" class="carousel slide" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                    <div class="carousel-item active">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card p-6 animate-fade-in">
+                                    <img src="https://images.pexels.com/photos/3900424/pexels-photo-3900424.jpeg" alt="Blood Cancer Research" class="rounded-lg mb-4 w-full h-48 object-cover">
+                                    <h3 class="text-xl font-bold text-orange-600 dark:text-orange-400">Blood Cancer</h3>
+                                    <p class="card-text mt-2">Free Access • 6 Months • Live Updates</p>
+                                    <button onclick="toggleDetails('bloodCancerDetails')" class="interactive-btn mt-4">Learn More</button>
+                                    <a href="/enroll.html?research=blood-cancer" class="interactive-btn mt-2">Enroll Now</a>
+                                    <div id="bloodCancerDetails" class="toggle-section mt-2 text-gray-700 dark:text-gray-400">
+                                        Our team uses advanced sequencing to identify novel treatment targets for blood cancers.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card p-6 animate-fade-in">
+                                    <img src="https://images.pexels.com/photos/5874090/pexels-photo-5874090.jpeg" alt="Breast Cancer Research" class="rounded-lg mb-4 w-full h-48 object-cover">
+                                    <h3 class="text-xl font-bold text-yellow-600 dark:text-yellow-400">Breast Cancer</h3>
+                                    <p class="card-text mt-2">Free Access • 4 Months • AI Diagnostics</p>
+                                    <button onclick="toggleDetails('breastCancerDetails')" class="interactive-btn mt-4">Learn More</button>
+                                    <a href="/enroll.html?research=breast-cancer" class="interactive-btn mt-2">Enroll Now</a>
+                                    <div id="breastCancerDetails" class="toggle-section mt-2 text-gray-700 dark:text-gray-400">
+                                        We focus on AI-driven diagnostics to improve breast cancer outcomes.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card p-6 animate-fade-in">
+                                    <img src="https://images.pexels.com/photos/139398/thermometer-headache-pain-pills-139398.jpeg" alt="Neuroelasticity Research" class="rounded-lg mb-4 w-full h-48 object-cover">
+                                    <h3 class="text-xl font-bold text-orange-600 dark:text-orange-400">Neuroelasticity</h3>
+                                    <p class="card-text mt-2">Free Access • 3 Months • Stroke Recovery</p>
+                                    <button onclick="toggleDetails('neuroelasticityDetails')" class="interactive-btn mt-4">Learn More</button>
+                                    <a href="/enroll.html?research=neuroelasticity" class="interactive-btn mt-2">Enroll Now</a>
+                                    <div id="neuroelasticityDetails" class="toggle-section mt-2 text-gray-700 dark:text-gray-400">
+                                        Our research explores how brain elasticity can aid in stroke recovery.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="carousel-item">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="card p-6 animate-fade-in">
+                                    <img src="https://images.pexels.com/photos/161246/brain-mind-google-effect-internet-161246.jpeg" alt="Neuroplasticity Research" class="rounded-lg mb-4 w-full h-48 object-cover">
+                                    <h3 class="text-xl font-bold text-yellow-600 dark:text-yellow-400">Neuroplasticity</h3>
+                                    <p class="card-text mt-2">Free Access • 3 Months • Cognitive Enhancement</p>
+                                    <button onclick="toggleDetails('neuroplasticityDetails')" class="interactive-btn mt-4">Learn More</button>
+                                    <a href="/enroll.html?research=neuroplasticity" class="interactive-btn mt-2">Enroll Now</a>
+                                    <div id="neuroplasticityDetails" class="toggle-section mt-2 text-gray-700 dark:text-gray-400">
+                                        We develop programs to enhance neuroplasticity for learning and rehabilitation.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card p-6 animate-fade-in">
+                                    <img src="https://images.pexels.com/photos/258750/pexels-photo-258750.jpeg" alt="Quantum World Research" class="rounded-lg mb-4 w-full h-48 object-cover">
+                                    <h3 class="text-xl font-bold text-orange-600 dark:text-orange-400">Quantum World</h3>
+                                    <p class="card-text mt-2">Free Access • 6 Months • Quantum Tech</p>
+                                    <button onclick="toggleDetails('quantumDetails')" class="interactive-btn mt-4">Learn More</button>
+                                    <a href="/enroll.html?research=quantum-world" class="interactive-btn mt-2">Enroll Now</a>
+                                    <div id="quantumDetails" class="toggle-section mt-2 text-gray-700 dark:text-gray-400">
+                                        Our quantum research aims to revolutionize medical imaging and computing.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card p-6 animate-fade-in">
+                                    <img src="https://images.pexels.com/photos/3184297/pexels-photo-3184297.jpeg" alt="Data Analysis Workshop" class="rounded-lg mb-4 w-full h-48 object-cover">
+                                    <h3 class="text-xl font-bold text-orange-600 dark:text-orange-400">Data Analysis Workshop</h3>
+                                    <p class="card-text mt-2">Free Access • 1 Week</p>
+                                    <a href="/workshops.html" class="interactive-btn mt-4">Join Now</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#researchCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#researchCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+            </div>
+            <div class="text-center mt-4">
+                <a href="#research" class="interactive-btn btn-lg">View All Research</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Smart Gate Controls Section -->
+    <section id="smart-controls" class="py-12 px-4">
+        <div class="container">
+            <h2 class="text-3xl font-bold text-center mb-8 text-orange-800 dark:text-orange-300">Smart Gate Controls</h2>
+            <div class="smart-gate-controls">
+                <p class="text-lg mb-6 text-gray-900 dark:text-gray-300">Experience smart access control inspired by GateMate technology, featuring Wi-Fi/Bluetooth control, voice command integration, virtual keys, and more.</p>
+                <div class="grid gap-4">
+                    <div class="flex items-center space-x-4">
+                        <button onclick="toggleGate()" class="interactive-btn" id="gateControlBtn">Open Gate</button>
+                        <p id="gateStatus" class="text-gray-700 dark:text-gray-400">Gate Status: Closed</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button onclick="checkGateStatus()" class="interactive-btn">Check Gate Status</button>
+                        <p id="gateStatusDisplay" class="text-gray-700 dark:text-gray-400">Click to check status.</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button onclick="toggleVoiceControl()" class="interactive-btn" id="voiceControlBtn">Enable Voice Control</button>
+                        <p id="voiceControlStatus" class="text-gray-700 dark:text-gray-400">Voice Control: Disabled</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button onclick="shareVirtualKey()" class="interactive-btn">Share Virtual Key</button>
+                        <div id="qrCode" class="qr-code toggle-section">Mock QR Code</div>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button onclick="addAccess()" class="interactive-btn">Add Access</button>
+                        <button onclick="removeAccess()" class="interactive-btn">Remove Access</button>
+                        <p id="accessStatus" class="text-gray-700 dark:text-gray-400">Access List: 0 Users</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <button onclick="toggleSecurityInfo()" class="interactive-btn">Show Security Info</button>
+                        <p id="securityInfo" class="toggle-section text-gray-700 dark:text-gray-400">256-bit End-to-End Encryption Enabled</p>
+                    </div>
+                    <div class="flex items-center space-x-4">
+                        <form><script src="https://checkout.razorpay.com/v1/payment-button.js" data-payment_button_id="pl_QNvkmdeFepVdoB" async> </script></form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Boost Your Learning Journey Section -->
+    <section class="strategy-section">
+        <div class="container">
+            <h2 class="text-center mb-4">Enhance Your Research Experience</h2>
+            <p class="text-center mb-5">Explore exclusive opportunities to deepen your research knowledge.</p>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="https://images.pexels.com/photos/208061/pexels-photo-208061.jpeg" class="card-img-top" alt="YouTube Lectures">
+                        <div class="card-body">
+                            <h5 class="card-title">Free Research Lectures</h5>
+                            <p class="card-text">Access free lectures to start your journey.</p>
+                            <a href="https://youtube.com" target="_blank" class="interactive-btn">Watch Now</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="https://images.pexels.com/photos/3184306/pexels-photo-3184306.jpeg" class="card-img-top" alt="Referral Program">
+                        <div class="card-body">
+                            <h5 class="card-title">Referral Program</h5>
+                            <p class="card-text">Invite friends and earn rewards.</p>
+                            <a href="/referral.html" class="interactive-btn">Refer Now</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="card">
+                        <img src="https://images.pexels.com/photos/5428000/pexels-photo-5428000.jpeg" class="card-img-top" alt="Trial Access">
+                        <div class="card-body">
+                            <h5 class="card-title">Free Trial Access</h5>
+                            <p class="card-text">Try our research platform before committing.</p>
+                            <a href="/trial.html" class="interactive-btn">Try Now</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Resources Section -->
+    <section id="resources" class="download-section">
+        <div class="container">
+            <h2 class="text-center mb-4">Download Research Resources</h2>
+            <p class="text-center mb-5">Access research papers, guides, and templates for your studies.</p>
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="card download-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Blood Cancer Research Paper</h5>
+                            <a href="/downloads/blood-cancer-paper.pdf" class="btn btn-primary" download><i class="fas fa-download me-2"></i>Download</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card download-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Breast Cancer Guide</h5>
+                            <a href="/downloads/breast-cancer-guide.pdf" class="btn btn-primary" download><i class="fas fa-download me-2"></i>Download</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card download-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Neuroelasticity Report</h5>
+                            <a href="/downloads/neuroelasticity-report.pdf" class="btn btn-primary" download><i class="fas fa-download me-2"></i>Download</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card download-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Neuroplasticity Guide</h5>
+                            <a href="/downloads/neuroplasticity-guide.pdf" class="btn btn-primary" download><i class="fas fa-download me-2"></i>Download</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card download-card">
+                        <div class="card-body">
+                            <h5 class="card-title">Quantum Research Template</h5>
+                            <a href="/downloads/quantum-template.pdf" class="btn btn-primary" download><i class="fas fa-download me-2"></i>Download</a>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-4">
+                    <div class="card download-card">
+                        <div class="card-body">
+                            <h5 class="card-title">GenomiXplore Brochure</h5>
+                            <a href="/downloads/genomixplore-brochure.pdf" class="btn btn-primary" download><i class="fas fa-download me-2"></i>Download</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-12 px-4 bg-gray-50 dark:bg-gray-800">
+        <div class="max-w-4xl mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-6 text-orange-800 dark:text-orange-300">About GenomiXplore</h2>
+            <p class="text-lg text-gray-700 dark:text-gray-400">
+                GenomiXplore is a dynamic research organization pushing the boundaries of science in cancer biology, neuroscience, and quantum exploration. Now featuring smart control systems inspired by GateMate for enhanced user interaction.
+            </p>
+            <button onclick="toggleDetails('aboutDetails')" class="interactive-btn mt-4">More About Us</button>
+            <div id="aboutDetails" class="toggle-section mt-4 text-gray-600 dark:text-gray-400">
+                Founded in 2025, GenomiXplore collaborates with global institutions to drive innovation and impact.
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-12 px-4">
+        <div class="max-w-2xl mx-auto section-bg p-6">
+            <h2 class="text-3xl font-bold text-center mb-6 text-orange-800 dark:text-orange-300">Get in Touch</h2>
+            <form id="contactForm" class="space-y-4">
+                <input type="text" id="name" placeholder="Your Name" class="w-full p-3 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                <input type="email" id="email" placeholder="Your Email" class="w-full p-3 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                <textarea id="message" placeholder="Your Message" class="w-full p-3 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" rows="4"></textarea>
+                <button type="button" onclick="submitForm()" class="interactive-btn w-full">Send Message</button>
+            </form>
+            <p id="formResponse" class="text-center mt-4 text-gray-700 dark:text-gray-400"></p>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="py-12 px-4 text-center bg-gray-900">
+        <div class="max-w-2xl mx-auto">
+            <h2 class="text-3xl font-bold mb-4 text-yellow-400">Stay Updated</h2>
+            <p class="mb-4 text-gray-300">Subscribe for the latest research updates and offers.</p>
+            <div class="flex justify-center">
+                <input type="email" placeholder="Enter your email" class="p-3 rounded-l-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+                <button class="interactive-btn rounded-r-lg">Subscribe</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Download Mobile App Section -->
+    <section class="py-5 text-center">
+        <div class="container">
+            <h2 class="mb-4">Download Our Mobile App</h2>
+            <p class="mb-4">Explore research on the go with our app!</p>
+            <a href="#" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/7/78/Google_Play_Store_badge_EN.svg" alt="Google Play" style="width: 150px; margin-right: 10px;"></a>
+            <a href="#" target="_blank"><img src="https://upload.wikimedia.org/wikipedia/commons/3/3c/Download_on_the_App_Store_Badge.svg" alt="App Store" style="width: 150px;"></a>
+        </div>
+    </section>
+
+    <!-- WhatsApp Chatbot -->
+    <div class="whatsapp-btn" id="whatsappBtn">
+        <i class="fab fa-whatsapp"></i>
+        <div class="whatsapp-tooltip">Need Help?</div>
+    </div>
+    <div class="whatsapp-options" id="whatsappOptions">
+        <a href="https://wa.me/+916201259584?text=Hello%20GenomiXplore%20Team,%20I%20have%20a%20query!" target="_blank">
+            <i class="fas fa-comment"></i> Message Us
+        </a>
+        <a href="tel:+916201259584">
+            <i class="fas fa-phone"></i> Call Us
+        </a>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 py-6 text-center">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>About GenomiXplore</h5>
+                    <p>Leading platform for cutting-edge research in cancer, neuroscience, and quantum science.</p>
+                    <div class="social-icons">
+                        <a href="#" class="me-3"><i class="fab fa-facebook"></i></a>
+                        <a href="#" class="me-3"><i class="fab fa-youtube"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#research">Research</a></li>
+                        <li><a href="#smart-controls">Smart Controls</a></li>
+                        <li><a href="#resources">Resources</a></li>
+                        <li><a href="#about">About Us</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact Us</h5>
+                    <p>123 Research Park, Bangalore, India - 560001<br>
+                    +91 <br>
+                    info@genomixplore.com<br>
+                    Mon - Sat: 9:00 AM - 7:00 PM</p>
+                </div>
+            </div>
+            <hr>
+            <p class="text-gray-300">© 2025 GenomiXplore. All rights reserved. | <a href="/terms.html" class="text-orange-400">Terms</a> | <a href="/privacy.html" class="text-orange-400">Privacy</a> | <a href="/refund.html" class="text-orange-400">Refund</a> | <a href="/sitemap.html" class="text-orange-400">Sitemap</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // Welcome Animation and Toggle
+        document.addEventListener('DOMContentLoaded', () => {
+            anime({
+                targets: '.animate-welcome',
+                scale: [0, 1],
+                opacity: [0, 1],
+                easing: 'easeOutExpo',
+                duration: 1500
+            });
+            anime({
+                targets: '.animate-fade-in',
+                opacity: [0, 1],
+                translateY: [20, 0],
+                delay: anime.stagger(100),
+                easing: 'easeOutExpo'
+            });
+        });
+
+        function toggleWelcomeMessage() {
+            const message = document.getElementById('welcomeMessage');
+            message.classList.toggle('active');
+        }
+
+        // Toggle Details for Each Section
+        function toggleDetails(id) {
+            const element = document.getElementById(id);
+            element.classList.toggle('active');
+        }
+
+        // Scroll to Section
+        function scrollToSection(sectionId) {
+            document.getElementById(sectionId).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Dark Mode Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
+        if (localStorage.getItem('theme') === 'dark') {
+            body.classList.add('dark');
+        }
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('dark');
+            localStorage.setItem('theme', body.classList.contains('dark') ? 'dark' : 'light');
+        });
+
+        // Search Functionality
+        function searchResearch() {
+            const query = document.getElementById('searchInput').value;
+            if (query) {
+                alert(`Searching for: ${query}. Redirecting to research section...`);
+                window.location.href = `#research?search=${encodeURIComponent(query)}`;
+            }
+        }
+        document.getElementById('searchInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') searchResearch();
+        });
+
+        // Form Submission (Mock)
+        function submitForm() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+            const responseEl = document.getElementById('formResponse');
+
+            if (!name || !email || !message) {
+                responseEl.textContent = 'Please fill all fields.';
+                responseEl.style.color = 'red';
+                return;
+            }
+
+            responseEl.textContent = 'Message sent successfully!';
+            responseEl.style.color = 'green';
+            document.getElementById('contactForm').reset();
+        }
+
+        // WhatsApp Chatbot Toggle
+        const whatsappBtn = document.getElementById('whatsappBtn');
+        const whatsappOptions = document.getElementById('whatsappOptions');
+        whatsappBtn.addEventListener('click', () => {
+            whatsappOptions.style.display = whatsappOptions.style.display === 'flex' ? 'none' : 'flex';
+        });
+
+        // Close WhatsApp options when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!whatsappBtn.contains(e.target) && !whatsappOptions.contains(e.target)) {
+                whatsappOptions.style.display = 'none';
+            }
+        });
+
+        // GateMate-Inspired Smart Controls
+        let gateOpen = false;
+        let voiceControlEnabled = false;
+        let accessCount = 0;
+
+        function toggleGate() {
+            gateOpen = !gateOpen;
+            const gateControlBtn = document.getElementById('gateControlBtn');
+            const gateStatus = document.getElementById('gateStatus');
+            gateControlBtn.textContent = gateOpen ? 'Close Gate' : 'Open Gate';
+            gateStatus.textContent = `Gate Status: ${gateOpen ? 'Open' : 'Closed'}`;
+        }
+
+        function checkGateStatus() {
+            const gateStatusDisplay = document.getElementById('gateStatusDisplay');
+            gateStatusDisplay.textContent = `Gate is currently ${gateOpen ? 'Open' : 'Closed'}.`;
+        }
+
+        function toggleVoiceControl() {
+            voiceControlEnabled = !voiceControlEnabled;
+            const voiceControlBtn = document.getElementById('voiceControlBtn');
+            const voiceControlStatus = document.getElementById('voiceControlStatus');
+            voiceControlBtn.textContent = voiceControlEnabled ? 'Disable Voice Control' : 'Enable Voice Control';
+            voiceControlStatus.textContent = `Voice Control: ${voiceControlEnabled ? 'Enabled' : 'Disabled'}`;
+        }
+
+        function shareVirtualKey() {
+            const qrCode = document.getElementById('qrCode');
+            qrCode.classList.toggle('active');
+        }
+
+        function addAccess() {
+            accessCount++;
+            const accessStatus = document.getElementById('accessStatus');
+            accessStatus.textContent = `Access List: ${accessCount} Users`;
+        }
+
+        function removeAccess() {
+            if (accessCount > 0) accessCount--;
+            const accessStatus = document.getElementById('accessStatus');
+            accessStatus.textContent = `Access List: ${accessCount} Users`;
+        }
+
+        function toggleSecurityInfo() {
+            const securityInfo = document.getElementById('securityInfo');
+            securityInfo.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>
